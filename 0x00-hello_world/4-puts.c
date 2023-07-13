@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 /**
- * Main - This command prints a string
- * Return: Should always be 0
+ * main - this is the main function
+ *
+ * Return: always 0
  */
 
 int main(void)
