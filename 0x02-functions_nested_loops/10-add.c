@@ -1,18 +1,13 @@
 #include "main.h"
+
 /**
-* add - Adds two integers
-* @a: The first integer
-* @b: The second integer
-*
-* Return: The sum of the two integers
-*/
+ * add - adds two values
+ * @n1: The first number to be added
+ * @n2: The second number to be added
+ * Return: Interger value
+ */
 
-int add(int a, int b)
+int add(int n1, int n2)
 {
-	int sum = a + b;
-
-	_putchar(sum / 10 + '0');
-	_putchar(sum % 10 + '0');
-
-	return (sum);
+	return (n1 +n2);
 }
