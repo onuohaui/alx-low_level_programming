@@ -2,16 +2,17 @@
 #include <stdlib.h>
 
 /**
- * main - Prints the opcodes of its own main function.
- * @argc: The number of arguments supplied to the program.
- * @argv: An array of pointers to the arguments.
+ * main - prints the opcodes of a given memory region
+ * @argc: number of command-line arguments
+ * @argv: array of arguments
  *
  * Return: Always 0.
  */
+
 int main(int argc, char *argv[])
 {
 	int bytes, i;
-	char *main = (char *)&main;
+	char *func_ptr;
 
 	if (argc != 2)
 	{
@@ -27,14 +28,14 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
 
+	func_ptr = (char *)&main;
+
 	for (i = 0; i < bytes; i++)
 	{
-		printf("%02hhx", main[i]);
-
+		printf("%02hhx", func_ptr[i]);
 		if (i < bytes - 1)
 			printf(" ");
 	}
-
 	printf("\n");
 
 	return (0);
