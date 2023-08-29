@@ -23,7 +23,6 @@ size_t free_listint_safe(listint_t **h)
 		temp = current;
 		current = current->next;
 
-		/* Set the next pointer to NULL to avoid accessing freed memory */
 		temp->next = NULL;
 		free(temp);
 
