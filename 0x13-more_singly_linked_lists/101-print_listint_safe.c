@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <stddef.h> /* for NULL */
+#include <stddef.h>
 #include "lists.h"
 
 /**
@@ -11,25 +11,42 @@
  */
 size_t print_listint_safe(const listint_t *head)
 {
-	const listint_t *slow, *fast;
+	const listint_t *current;
 	size_t count = 0;
+	int is_loop = 0; /* Flag to indicate if a loop is detected */
 
-	slow = head;
-	fast = head;
+	current = head;
 
-	while (slow != NULL && fast != NULL && fast->next != NULL)
+	while (current != NULL)
 	{
-		slow = slow->next;
-		fast = fast->next->next;
-
-		printf("[%p] %d\n", (void *)slow, slow->n);
-		count++;
-
-		if (slow == fast)
+		/* Check if the current node has been visited */
+		if (current->visited)
 		{
-			printf("-> [%p] %d\n", (void *)fast, fast->n);
+			printf("-> [%p] %d\n", (void *)current, current->n);
+			is_loop = 1;
 			break;
 		}
+
+		printf("[%p] %d\n", (void *)current, current->n);
+		current->visited = 1; /* Mark the current node as visited */
+		count++;
+
+		current = current->next;
+	}
+
+	/* Reset the visited flag for all nodes */
+	current = head;
+	while (current != NULL)
+	{
+		current->visited = 0;
+		current = current->next;
+	}
+
+	/* If a loop is detected, print an error message and exit */
+	if (is_loop)
+	{
+		fprintf(stderr, "Error: Loop detected in the linked list\n");
+		exit(98);
 	}
 
 	return (count);
