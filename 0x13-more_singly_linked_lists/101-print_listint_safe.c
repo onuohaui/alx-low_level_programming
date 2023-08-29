@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <stddef.h>
 #include "lists.h"
 
 /**
@@ -11,42 +10,24 @@
  */
 size_t print_listint_safe(const listint_t *head)
 {
-	const listint_t *current;
+	const listint_t *tortoise, *hare;
 	size_t count = 0;
-	int is_loop = 0; /* Flag to indicate if a loop is detected */
 
-	current = head;
+	tortoise = hare = head;
 
-	while (current != NULL)
+	while (hare != NULL && hare->next != NULL)
 	{
-		/* Check if the current node has been visited */
-		if (current->visited)
-		{
-			printf("-> [%p] %d\n", (void *)current, current->n);
-			is_loop = 1;
-			break;
-		}
+		tortoise = tortoise->next;
+		hare = hare->next->next;
 
-		printf("[%p] %d\n", (void *)current, current->n);
-		current->visited = 1; /* Mark the current node as visited */
+		printf("[%p] %d\n", (void *)tortoise, tortoise->n);
 		count++;
 
-		current = current->next;
-	}
-
-	/* Reset the visited flag for all nodes */
-	current = head;
-	while (current != NULL)
-	{
-		current->visited = 0;
-		current = current->next;
-	}
-
-	/* If a loop is detected, print an error message and exit */
-	if (is_loop)
-	{
-		fprintf(stderr, "Error: Loop detected in the linked list\n");
-		exit(98);
+		if (tortoise == hare)
+		{
+			printf("-> [%p] %d\n", (void *)hare, hare->n);
+			break;
+		}
 	}
 
 	return (count);
