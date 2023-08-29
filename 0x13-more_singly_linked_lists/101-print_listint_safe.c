@@ -3,47 +3,60 @@
 #include <stdlib.h>
 
 /**
- * print_listint_safe - prints a listint_t list
+ * find_loop - Checks for loop in linked list
+ * @address_lookup: Array of visited node addresses
+ * @count: Number of visited nodes
+ * @next_node: Next node to visit
+ * Return: 1 if loop found, 0 otherwise
+ */
+int find_loop(void **address_lookup, size_t
+		count, const listint_t *next_node)
+{
+	size_t i;
+
+	for (i = 0; i < count; i++)
+	{
+		if (address_lookup[i] == next_node)
+		{
+			printf("-> [%p] %d\n", (void *)next_node,
+					next_node->n);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+
+/**
+ * print_listint_safe - prints a listint_t list safely
  * @head: pointer to the head of the list
  * Return: the number of nodes in the list
  */
 size_t print_listint_safe(const listint_t *head)
 {
+	const listint_t *current = head;
 	size_t count = 0;
-	const listint_t *slow = head, *fast = head;
+	void **address_lookup = NULL;
 
 	if (head == NULL)
-	{
 		exit(98);
-	}
 
-	while (fast != NULL && fast->next != NULL)
+	while (current)
 	{
-		/* Print current node */
-		printf("[%p] %d\n", (void *)slow, slow->n);
-		count++;
+		address_lookup = realloc(address_lookup,
+				sizeof(void *) * (count + 1));
+		if (!address_lookup)
+			exit(98);
 
-		/* Move one step for slow */
-		slow = slow->next;
+		printf("[%p] %d\n", (void *)current, current->n);
+		address_lookup[count++] = (void *)current;
 
-		/* Move two steps for fast */
-		fast = fast->next->next;
+		if (find_loop(address_lookup, count, current->next))
+			break;
 
-		/* If loop is detected */
-		if (slow == fast)
-		{
-			printf("-> [%p] %d\n", (void *)slow, slow->n);
-			return (count);
-		}
+		current = current->next;
 	}
 
-	/* Print remaining nodes if no loop */
-	while (slow != NULL)
-	{
-		printf("[%p] %d\n", (void *)slow, slow->n);
-		count++;
-		slow = slow->next;
-	}
-
+	free(address_lookup);
 	return (count);
 }
