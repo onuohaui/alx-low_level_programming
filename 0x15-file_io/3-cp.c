@@ -3,25 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- * error_exit - Prints an error message
- *	and exits the program with the specified code
- * @code: The exit code
- * @message: The error message to print
- */
 void error_exit(int code, const char *message)
 {
 	dprintf(STDERR_FILENO, "%s\n", message);
 	exit(code);
 }
-
-/**
- * main - Copies the content of one file to another file
- * @argc: The number of command-line arguments
- * @argv: An array of strings containing the command-line arguments
- *
- * Return: 0 on success, non-zero on failure
- */
 
 int main(int argc, char *argv[])
 {
@@ -58,3 +44,4 @@ int main(int argc, char *argv[])
 
 	return (0);
 }
+
