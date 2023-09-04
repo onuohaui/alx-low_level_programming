@@ -4,8 +4,8 @@
 #include <stdlib.h>
 
 /**
- * error_exit - Prints an error message and
- *	exits the program with the specified code
+ * error_exit - Prints an error message
+ *	and exits the program with the specified code
  * @code: The exit code
  * @message: The error message to print
  */
@@ -16,7 +16,7 @@ void error_exit(int code, const char *message)
 }
 
 /**
- * main - Entry point of the program
+ * main - Copies the content of one file to another file
  * @argc: The number of command-line arguments
  * @argv: An array of strings containing the command-line arguments
  *
