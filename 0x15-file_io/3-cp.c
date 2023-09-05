@@ -3,14 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFFER_SIZE 1024
-
 int open_files(char *file_from, char *file_to);
 ssize_t copy_content(int fd_from, int fd_to);
 void close_files(int fd_from, int fd_to);
 
 /**
- * main - Main function to copy content from one file to another
+ * main - function to copy content
  * @argc: argument count
  * @argv: argument vector
  * Return: 0 on success, error code on failure
@@ -29,9 +27,6 @@ int main(int argc, char *argv[])
 	fd_to = fd_from % (1 << 16);
 	fd_from = fd_from / (1 << 16);
 
-	if (fd_from == -1)
-		exit(98);
-
 	if (copy_content(fd_from, fd_to) == -1)
 		exit(98);
 
@@ -41,7 +36,7 @@ int main(int argc, char *argv[])
 }
 
 /**
- * open_files - Opens the source and destination files
+ * open_files - Open source/destination files
  * @file_from: source file
  * @file_to: destination file
  * Return: Combined file descriptors or -1
@@ -77,9 +72,9 @@ int open_files(char *file_from, char *file_to)
 ssize_t copy_content(int fd_from, int fd_to)
 {
 	ssize_t read_count, write_count;
-	char buffer[BUFFER_SIZE];
+	char buffer[1024];
 
-	while ((read_count = read(fd_from, buffer, BUFFER_SIZE)) > 0)
+	while ((read_count = read(fd_from, buffer, 1024)) > 0)
 	{
 		write_count = write(fd_to, buffer, read_count);
 		if (write_count != read_count)
