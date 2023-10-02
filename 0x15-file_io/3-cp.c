@@ -79,12 +79,18 @@ ssize_t copy_content(int fd_from, int fd_to)
 		write_count = write(fd_to, buffer, read_count);
 		if (write_count != read_count)
 		{
-			dprintf(STDERR_FILENO, "Error: Can't write to\n");
+			dprintf(STDERR_FILENO, "Error: Can't write to fd %d\n", fd_to);
 			return (-1);
 		}
 	}
 
-	return (read_count);
+	if (read_count == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read from fd %d\n", fd_from);
+		return (-1);
+	}
+
+	return (0);
 }
 
 /**
