@@ -1,96 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <elf.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <elf.h>
 
 /**
- * print_error - Prints the error message and exits the program
- * @msg: The error message to be printed
+ * print_magic - prints the magic numbers
+ * @header: the ELF header
  */
-void print_error(const char *msg)
+void print_magic(Elf64_Ehdr header)
 {
-	fprintf(stderr, "%s\n", msg);
-	exit(98);
+	printf("Magic:   %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x\n",
+			header.e_ident[EI_MAG0], header.e_ident[EI_MAG1],
+			header.e_ident[EI_MAG2], header.e_ident[EI_MAG3],
+			header.e_ident[EI_CLASS], header.e_ident[EI_DATA],
+			header.e_ident[EI_VERSION], header.e_ident[EI_OSABI],
+			header.e_ident[EI_ABIVERSION], header.e_ident[EI_PAD],
+			header.e_ident[9], header.e_ident[10], header.e_ident[11],
+			header.e_ident[12], header.e_ident[13], header.e_ident[15]);
 }
 
 /**
- * display_magic - Displays the magic bytes of the ELF header
- * @header: Pointer to the ELF header
+ * is_elf_file - checks if file is an ELF file
+ * @header: the ELF header
+ * @filename: name of the file
+ *
+ * Return: 1 if is ELF, 0 otherwise.
  */
-void display_magic(const Elf64_Ehdr *header)
+int is_elf_file(Elf64_Ehdr header, char *filename)
 {
-	printf("Magic: %c%c%c%c\n",
-			header->e_ident[EI_MAG0],
-			header->e_ident[EI_MAG1],
-			header->e_ident[EI_MAG2],
-			header->e_ident[EI_MAG3]);
-}
-
-/**
- * display_class - Displays the ELF class (32-bit or 64-bit)
- * @header: Pointer to the ELF header
- */
-void display_class(const Elf64_Ehdr *header)
-{
-	printf("Class: %s\n", (header->e_ident[EI_CLASS] ==
-				ELFCLASS64) ? "ELF64" : "ELF32");
-}
-
-/**
- * display_elf_header - Displays the information in the ELF header
- * @filename: The name of the ELF file
- */
-void display_elf_header(const char *filename)
-{
-	int fd;
-	Elf64_Ehdr header;
-
-	fd = open(filename, O_RDONLY);
-
-	if (fd == -1)
-	{
-		print_error("Failed to open the file");
-	}
-
-	if (read(fd, &header, sizeof(Elf64_Ehdr)) !=
-			sizeof(Elf64_Ehdr))
-	{
-		print_error("Failed to read ELF header");
-	}
-
 	if (header.e_ident[EI_MAG0] != ELFMAG0 ||
 			header.e_ident[EI_MAG1] != ELFMAG1 ||
-			header.e_ident[EI_MAG2] != ELFMAG2 ||
-			header.e_ident[EI_MAG3] != ELFMAG3)
+			header.e_ident[EI_MAG2] != ELFMAG2 || header.e_ident[EI_MAG3] != ELFMAG3)
 	{
-		print_error("Not an ELF file");
+		fprintf(stderr, "Error: %s is not an ELF file\n", filename);
+		return (0);
 	}
-
-	display_magic(&header);
-	display_class(&header);
-
-	close(fd);
+	return (1);
 }
 
 /**
  * main - Entry point
  * @argc: Argument count
- * @argv: Argument vector
+ * @argv: Argument values
  *
- * Reads an ELF file specified by the user
- *  and prints its header information.
- *
- * Return: 0 on success, 98 on failure
+ * Return: 0 on success, or exit with status code 98 on error.
  */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
+	int fd;
+	Elf64_Ehdr header;
+
 	if (argc != 2)
 	{
-		print_error("Usage: elf_header elf_filename");
+		fprintf(stderr, "Usage: %s elf_filename\n", argv[0]);
+		exit(98);
 	}
 
-	display_elf_header(argv[1]);
+	fd = open(argv[1], O_RDONLY);
+	if (fd == -1)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		exit(98);
+	}
+
+	if (read(fd, &header, sizeof(header)) != sizeof(header))
+	{
+		fprintf(stderr, "Error: Can't read ELF header of %s\n", argv[1]);
+		close(fd);
+		exit(98);
+	}
+	close(fd);
+
+	if (!is_elf_file(header, argv[1]))
+		exit(98);
+
+	print_magic(header);
+	/* ... Similarly, print other header fields using helper functions ... */
 
 	return (0);
 }
