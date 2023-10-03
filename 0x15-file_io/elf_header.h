@@ -1,5 +1,6 @@
 #ifndef ELF_HEADER_H
 #define ELF_HEADER_H
+#include <stdint.h>
 
 /* Define the ELF header structure */
 typedef struct ElfHeader

@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include "elf_header.h"
-#define BUFF_SIZE 64
 
 /**
  * errorExit - Display an error message and exit the
- *  program with exit code 98.
+ *             program with exit code 98.
  * @message: The error message to display.
  */
 void errorExit(const char *message)
@@ -21,7 +19,7 @@ void errorExit(const char *message)
 
 /**
  * readElfHeader - Read the ELF header from a file and store
- *  it in the provided header structure.
+ *                 it in the provided header structure.
  * @filename: The name of the ELF file to read.
  * @header: Pointer to the ElfHeader structure to store the header information.
  */
@@ -42,10 +40,9 @@ void readElfHeader(const char *filename, ElfHeader *header)
 }
 
 /**
- * isElfFile - Check if the provided ElfHeader
- *  structure represents a valid ELF file.
+ * isElfFile - Check if the provided ElfHeader structure represents
+ *            a valid ELF file.
  * @header: Pointer to the ElfHeader structure to check.
- *
  * Return: 1 if the header represents a valid ELF file, 0 otherwise.
  */
 int isElfFile(ElfHeader *header)
@@ -55,32 +52,38 @@ int isElfFile(ElfHeader *header)
 }
 
 /**
- * displayElfHeader - Display the information stored
- *  in the ElfHeader structure.
- * @header: Pointer to the ElfHeader structure
- *  containing the header information.
+ * displayElfHeader - Display the information
+ *  stored in the ElfHeader structure.
+ * @header: Pointer to the ElfHeader
+ *  structure containing the header information.
  */
 void displayElfHeader(ElfHeader *header)
 {
-	printf("Magic:   %02x %02x %02x %02x\n",
+	printf("ELF Header:\n");
+	printf("  Magic:   %02x %02x %02x %02x\n",
 			header->e_ident[0], header->e_ident[1],
 			header->e_ident[2], header->e_ident[3]);
-	printf("Class:   %s bit\n",
-			(header->e_ident[4] == 2) ? "64" : "32");
-	printf("Data:    %s\n",
-			(header->e_ident[5] == 1) ? "2's complement, little-endian" : "unknown");
-	printf("Version: %d (current)\n", header->e_ident[6]);
-	printf("OS/ABI:  %d\n", header->e_ident[7]);
-	printf("ABI Ver: %d\n", header->e_ident[8]);
-	printf("Type:    0x%x\n", header->e_type);
-	printf("Entry point address: 0x%lx\n", header->e_entry);
+
+	printf("  Class:                             %s\n",
+			(header->e_ident[4] == 1) ? "ELF32" : "ELF64");
+
+	printf("  Data:                              %s\n",
+			(header->e_ident[5] == 1) ? "2's complement, little endian" :
+			"2's complement, big endian");
+
+	printf("  Version: %d (current)\n", header->e_ident[6]);
+
+	printf("  OS/ABI:                            %d\n", header->e_ident[7]);
+	printf("  ABI Version:                       %d\n", header->e_ident[8]);
+
+	printf("  Type:                              %d\n", header->e_type);
+	printf("  Entry point address:               0x%lx\n", header->e_entry);
 }
 
 /**
  * main - Entry point for the program.
  * @argc: Argument count.
  * @argv: Argument vector.
- *
  * Return: 0 on success, otherwise exits with code 98.
  */
 int main(int argc, char *argv[])
@@ -93,7 +96,6 @@ int main(int argc, char *argv[])
 		exit(98);
 	}
 
-	memset(&header, 0, sizeof(ElfHeader));
 	readElfHeader(argv[1], &header);
 
 	if (!isElfFile(&header))
